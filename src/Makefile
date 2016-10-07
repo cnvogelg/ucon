@@ -40,8 +40,8 @@ LDFLAGS=-nostdlib -lvcs -lamiga $(DEBUGFLAGS)
 AS=vasmm68k_mot
 ASFLAGS=-quiet -Fhunk -I$(TC_DIR)/os-include -m68000
 
-SRCS=main.c pkt.c
-HDRS=debug.h compiler.h pkt.h
+SRCS=main.c pkt.c ucon.c
+HDRS=debug.h compiler.h pkt.h ucon.h
 ASRCS=sysbase.s
 
 ifeq "$(DEBUG)" "1"
