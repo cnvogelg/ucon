@@ -1,0 +1,12 @@
+==id $Id: ucon_lib.sfd 0.1 $
+==base _UconBase
+==basetype struct Library *
+==libname ucon.resource
+==bias 6
+==public
+==include <exec/types.h>
+LONG UconOpen() ()
+VOID UconClose() ()
+LONG UconRead(UBYTE *buffer, LONG length) (d0,d1)
+LONG UconWrite(UBYTE *buffer, LONG length) (d0,d1)
+==end
