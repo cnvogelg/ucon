@@ -9,7 +9,7 @@
 #endif
 
 #ifndef __NOLIBBASE__
-extern struct Library *UconBase;
+extern struct UConResource *UconBase;
 #endif
 
 #ifdef __GNUC__

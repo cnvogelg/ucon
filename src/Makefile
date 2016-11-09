@@ -35,7 +35,7 @@ TC_DIR=/opt/m68k-amigaos
 
 # cross compiler/assembler setup
 CC=vc
-CFLAGS=-c99 -sc $(CDEFINES) $(OPTFLAGS) $(DEBUGFLAGS)
+CFLAGS=-c99 -sc $(CDEFINES) $(OPTFLAGS) $(DEBUGFLAGS) -I../ucon_lib/include
 LDFLAGS=-nostdlib -lvcs -lamiga $(DEBUGFLAGS)
 AS=vasmm68k_mot
 ASFLAGS=-quiet -Fhunk -I$(TC_DIR)/os-include -m68000
