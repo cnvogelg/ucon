@@ -40,12 +40,16 @@ LDFLAGS=-nostdlib -lvcs -lamiga $(DEBUGFLAGS)
 AS=vasmm68k_mot
 ASFLAGS=-quiet -Fhunk -I$(TC_DIR)/os-include -m68000
 
-SRCS=main.c pkt.c ucon.c
-HDRS=debug.h compiler.h pkt.h ucon.h
+SRCS=main.c pkt.c ucon.c romtag.c boot.c
+HDRS=debug.h compiler.h pkt.h ucon.h boot.h
 ASRCS=sysbase.s
 
 ifeq "$(DEBUG)" "1"
 SRCS+=debug.c
+endif
+
+ifneq "$(VERBOSE)" "1"
+V=@
 endif
 
 # end must be last
@@ -70,7 +74,8 @@ flavors:
 	@echo "---- done flavors: $(FLAVORS) -----"
 
 $(OUTPUT): $(OBJS)
-	vc $^ -o $@ $(LDFLAGS)
+	@echo "  LD  $@"
+	$(V)vc $^ -o $@ $(LDFLAGS)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -81,10 +86,12 @@ $(OBJ_DIR):
 $(OBJS): $(SRCS) $(HDRS) $(ASRCS)
 
 $(OBJ_DIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "  CC  $<"
+	$(V)$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR)/%.o: %.s
-	$(AS) $(ASFLAGS) -o $@ $<
+	@echo "  AS  $<"
+	$(V)$(AS) $(ASFLAGS) -o $@ $<
 
 clean:
 	rm -rf $(BUILD_DIR)
