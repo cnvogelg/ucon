@@ -9,6 +9,7 @@
 
 #include "ucon.h"
 #include "debug.h"
+#include "pkt.h"
 
 struct ucon_fh *ucon_init(void)
 {
@@ -55,27 +56,27 @@ void ucon_exit(struct ucon_fh *fh)
   FreeVec(fh);
 }
 
-LONG ucon_write(struct ucon_fh *fh, UBYTE *buffer, LONG length)
+void ucon_write(struct ucon_fh *fh, struct DosPacket *dp, UBYTE *buffer, LONG length)
 {
-  return UconWrite(buffer, length);
+  /* sync write and direct reply */
+  LONG result = UconWrite(buffer, length);
+  pkt_reply2(dp, result, 0);
 }
 
-static char dir[] = "dir";
-static char endshell[] = "endshell";
-
-LONG ucon_read(struct ucon_fh *fh, UBYTE *buffer, LONG length)
+void ucon_read(struct ucon_fh *fh, struct DosPacket *dp, UBYTE *buffer, LONG length)
 {
-  if(fh->fake_state == 0) {
-    fh->fake_state++;
-    CopyMemQuick( dir, buffer, sizeof(dir) );
-    return sizeof(dir);
+  /* check if read is pending? */
+  if(fh->read_pkt != NULL) {
+    D(("read: already pending??\n"));
+    pkt_reply2(dp, 0, 0);
+    return;
   }
-  else if(fh->fake_state == 1) {
-    fh->fake_state++;
-    CopyMemQuick( endshell, buffer, sizeof(endshell) );
-    return sizeof(endshell);
-  }
-  return 0;
+
+  /* store current packet */
+  fh->read_pkt = dp;
+
+  /* call async read. it will be answered with signal */
+  UconRead(buffer, length, &fh->read_result);
 }
 
 ULONG ucon_sigmask(struct ucon_fh *fh)
@@ -86,4 +87,11 @@ ULONG ucon_sigmask(struct ucon_fh *fh)
 void ucon_handle_sig(struct ucon_fh *fh, ULONG sigmask)
 {
   D(("got signal %lx\n", sigmask));
+  if(fh->read_pkt == NULL) {
+    D(("signal: no pending read??\n"));
+  } else {
+    D(("read finished: len=%lx\n", fh->read_result));
+    pkt_reply2(fh->read_pkt, fh->read_result, 0);
+    fh->read_pkt = NULL;
+  }
 }

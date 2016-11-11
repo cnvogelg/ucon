@@ -7,6 +7,6 @@
 ==include <resources/ucon.h>
 LONG UconOpen(ULONG readSigMask, struct Task *task) (d0,d1)
 VOID UconClose() ()
-LONG UconRead(UBYTE *buffer, LONG length) (d0,d1)
+VOID UconRead(UBYTE *buffer, LONG length, LONG *result) (d0,d1,d2)
 LONG UconWrite(UBYTE *buffer, LONG length) (d0,d1)
 ==end

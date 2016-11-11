@@ -11,8 +11,8 @@ LONG __UconOpen(__reg("a6") struct UConResource *, __reg("d0") ULONG readSigMask
 VOID __UconClose(__reg("a6") struct UConResource *)="\tjsr\t-12(a6)";
 #define UconClose() __UconClose(UconBase)
 
-LONG __UconRead(__reg("a6") struct UConResource *, __reg("d0") UBYTE * buffer, __reg("d1") LONG length)="\tjsr\t-18(a6)";
-#define UconRead(buffer, length) __UconRead(UconBase, (buffer), (length))
+VOID __UconRead(__reg("a6") struct UConResource *, __reg("d0") UBYTE * buffer, __reg("d1") LONG length, __reg("d2") LONG * result)="\tjsr\t-18(a6)";
+#define UconRead(buffer, length, result) __UconRead(UconBase, (buffer), (length), (result))
 
 LONG __UconWrite(__reg("a6") struct UConResource *, __reg("d0") UBYTE * buffer, __reg("d1") LONG length)="\tjsr\t-24(a6)";
 #define UconWrite(buffer, length) __UconWrite(UconBase, (buffer), (length))

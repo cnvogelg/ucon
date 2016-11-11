@@ -60,6 +60,9 @@ OUTPUT=$(BUILD_DIR)/$(PRJ_NAME)$(FLAVOR)
 
 all: $(BUILD_DIR) $(OBJ_DIR) $(OUTPUT)
 
+release:
+	$(MAKE) FLAVOR=_rel
+
 flavors:
 	@for f in $(FLAVORS) ; do \
 		$(MAKE) FLAVOR=$$f || exit 1 ; \

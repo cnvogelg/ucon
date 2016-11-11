@@ -1,3 +1,5 @@
+#include <dos/filehandler.h>
+
 #include <proto/exec.h>
 #include <proto/dos.h>
 
@@ -12,6 +14,7 @@ int ConMain(void)
   struct DosPacket *dp;
   struct Message *msg;
   struct ucon_fh *ucon_fh;
+  struct DeviceNode *dn;
 
   /* receive init packet */
   D(("Con wait\n"));
@@ -27,6 +30,10 @@ int ConMain(void)
     pkt_reply(dp, DOSFALSE);
     return 0;
   }
+
+  /* store my task in device node */
+  dn = (struct DeviceNode *)BADDR(dp->dp_Arg3);
+  dn->dn_Task = mp;
 
   /* ack first packet */
   D(("Con ack first\n"));
@@ -87,8 +94,7 @@ int ConMain(void)
               UBYTE *buffer = (UBYTE*)dp->dp_Arg2;
               LONG length = dp->dp_Arg3;
               D(("READ: buf=@%lx len=%ld\n", buffer, length));
-              LONG result = ucon_read(ucon_fh, buffer, length);
-              pkt_reply2(dp, result, 0);
+              ucon_read(ucon_fh, dp, buffer, length);
               break;
             }
           case ACTION_WRITE:
@@ -96,8 +102,7 @@ int ConMain(void)
               UBYTE *buffer = (UBYTE*)dp->dp_Arg2;
               LONG length = dp->dp_Arg3;
               D(("WRITE: buf=@%lx len=%ld\n", buffer, length));
-              LONG result = ucon_write(ucon_fh, buffer, length);
-              pkt_reply2(dp, result, 0);
+              ucon_write(ucon_fh, dp, buffer, length);
               break;
             }
           default:

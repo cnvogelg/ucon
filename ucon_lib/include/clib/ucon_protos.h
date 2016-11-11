@@ -3,7 +3,7 @@
 
 
 /*
-**	$VER: ucon_protos.h 0.1 (09.11.2016)
+**	$VER: ucon_protos.h 0.1 (11.11.2016)
 **
 **	C prototypes. For use with 32 bit integers only.
 **
@@ -17,7 +17,7 @@
 
 LONG UconOpen(ULONG readSigMask, struct Task * task);
 VOID UconClose(void);
-LONG UconRead(UBYTE * buffer, LONG length);
+VOID UconRead(UBYTE * buffer, LONG length, LONG * result);
 LONG UconWrite(UBYTE * buffer, LONG length);
 
 #endif	/*  CLIB_UCON_PROTOS_H  */
