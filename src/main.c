@@ -65,14 +65,22 @@ int ConMain(void)
         dp->dp_Res2 = 0;
         switch (dp->dp_Type) {
           case ACTION_FINDINPUT:
-          case ACTION_FINDOUTPUT:
           case ACTION_FINDUPDATE:
+            {
+              /* allow only one reader */
+              if(ucon_fh->reader_task != NULL) {
+                pkt_reply2(dp, DOSFALSE, ERROR_OBJECT_IN_USE);
+                break;
+              }
+              ucon_fh->reader_task = dp->dp_Port->mp_SigTask;
+            }
+            /* fall through */
+          case ACTION_FINDOUTPUT:
             {
               struct FileHandle *dos_fh = BADDR(dp->dp_Arg1);
               dos_fh->fh_Port = (APTR)DOSTRUE; /* == fh_Interactive */
               dos_fh->fh_Arg1 = (ULONG)ucon_fh;
               ucon_fh->use_count++;
-              ucon_fh->break_task = dp->dp_Port->mp_SigTask;
               D(("Find X: fh=@%lx use_count=%ld\n", dos_fh, ucon_fh->use_count));
               pkt_reply(dp, DOSTRUE);
               break;
@@ -80,12 +88,17 @@ int ConMain(void)
           case ACTION_END:
             {
               ucon_fh->use_count--;
+
+              /* clean up reader */
+              if(ucon_fh->reader_task == dp->dp_Port->mp_SigTask) {
+                ucon_fh->reader_task = NULL;
+              }
+
               struct FileHandle *dos_fh = BADDR(dp->dp_Arg1);
               D(("End: fh=@%lx use_count=%ld\n", dos_fh, ucon_fh->use_count));
+              pkt_reply(dp, DOSTRUE);
               if(ucon_fh->use_count == 0) {
                 stay = FALSE;
-              } else {
-                pkt_reply(dp, DOSTRUE);
               }
               break;
             }
@@ -117,7 +130,8 @@ int ConMain(void)
   D(("Close con\n"));
   ucon_exit(ucon_fh);
 
-  pkt_reply(dp, DOSFALSE);
+  dn->dn_Task = NULL;
+
   D(("Con done\n"));
   return 0;
 }

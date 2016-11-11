@@ -4,8 +4,7 @@
 struct ucon_fh
 {
   UWORD         use_count;
-  UWORD         fake_state;
-  struct Task * break_task;
+  struct Task * reader_task;
 
   struct UconResource *ucon_res;
   ULONG                read_sig;
