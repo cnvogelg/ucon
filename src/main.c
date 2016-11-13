@@ -80,8 +80,12 @@ int ConMain(void)
               struct FileHandle *dos_fh = BADDR(dp->dp_Arg1);
               dos_fh->fh_Port = (APTR)DOSTRUE; /* == fh_Interactive */
               dos_fh->fh_Arg1 = (ULONG)ucon_fh;
+              UBYTE *name = (UBYTE *)BADDR(dp->dp_Arg3);
+              LONG type = dp->dp_Type;
               ucon_fh->use_count++;
-              D(("Find X: fh=@%lx use_count=%ld\n", dos_fh, ucon_fh->use_count));
+              D(("Find %ld: fh=@%lx use_count=%ld name=%s\n",
+                 type, dos_fh, ucon_fh->use_count, name));
+              ucon_open(ucon_fh, dos_fh, name, type);
               pkt_reply(dp, DOSTRUE);
               break;
             }
@@ -96,6 +100,7 @@ int ConMain(void)
 
               struct FileHandle *dos_fh = BADDR(dp->dp_Arg1);
               D(("End: fh=@%lx use_count=%ld\n", dos_fh, ucon_fh->use_count));
+              ucon_close(ucon_fh, dos_fh);
               pkt_reply(dp, DOSTRUE);
               if(ucon_fh->use_count == 0) {
                 stay = FALSE;

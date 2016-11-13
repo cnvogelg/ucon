@@ -17,6 +17,9 @@ struct ucon_fh
 extern struct ucon_fh *ucon_init(void);
 extern void ucon_exit(struct ucon_fh *fh);
 
+extern void ucon_open(struct ucon_fh *fh, APTR this_fh, UBYTE *name, LONG type);
+extern void ucon_close(struct ucon_fh *fh, APTR this_fh);
+
 extern void ucon_write(struct ucon_fh *fh, struct DosPacket *dp, UBYTE *buffer, LONG length);
 extern void ucon_read(struct ucon_fh *fh, struct DosPacket *dp, UBYTE *buffer, LONG length);
 

@@ -5,8 +5,10 @@
 ==bias 6
 ==public
 ==include <resources/ucon.h>
-LONG UconOpen(ULONG readSigMask, struct Task *task) (d0,d1)
-VOID UconClose() ()
+LONG UconInit(ULONG readSigMask, struct Task *task) (d0,d1)
+VOID UconExit() ()
+VOID UconOpen(APTR fh, BYTE *name, LONG type) (d0,d1,d2)
+VOID UconClose(APTR fh) (d0)
 VOID UconRead(UBYTE *buffer, LONG length, LONG *result) (d0,d1,d2)
 LONG UconWrite(UBYTE *buffer, LONG length) (d0,d1)
 ==end

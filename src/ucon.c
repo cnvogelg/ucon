@@ -41,7 +41,7 @@ struct ucon_fh *ucon_init(void)
 
   /* open ucon resource */
   struct Task *myTask = FindTask(NULL);
-  LONG result = UconOpen(fh->read_sig_mask, myTask);
+  LONG result = UconInit(fh->read_sig_mask, myTask);
   D(("open result=%lx\n", result));
 
   return fh;
@@ -50,10 +50,20 @@ struct ucon_fh *ucon_init(void)
 void ucon_exit(struct ucon_fh *fh)
 {
   /* close ucon resource */
-  UconClose();
+  UconExit();
 
   FreeSignal(fh->read_sig);
   FreeVec(fh);
+}
+
+void ucon_open(struct ucon_fh *fh, APTR this_fh, UBYTE *name, LONG type)
+{
+  UconOpen(this_fh, name, type);
+}
+
+void ucon_close(struct ucon_fh *fh, APTR this_fh)
+{
+  UconClose(this_fh);
 }
 
 void ucon_write(struct ucon_fh *fh, struct DosPacket *dp, UBYTE *buffer, LONG length)
