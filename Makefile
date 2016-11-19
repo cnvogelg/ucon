@@ -1,14 +1,16 @@
 FLAVOR?=_dbg
 BUILD_DIR=BUILD
 HANDLER_NAME=handler/BUILD/ucon-handler$(FLAVOR)
+RESOURCE_NAME=resource/BUILD/ucon-resource$(FLAVOR)
 
+PRJ_DIRS=handler resource
 FLAVORS=_rel _dbg
 
 include version.mk
 
 DIST_NAME=ucon_$(PROJECT_MAJOR).$(PROJECT_MINOR)
 
-all: $(HANDLER_NAME)
+all: $(HANDLER_NAME) $(RESOURCE_NAME)
 
 force:
 	rm -f $(HANDLER_NAME)
@@ -26,17 +28,25 @@ $(BUILD_DIR):
 $(HANDLER_NAME):
 	$(MAKE) -C handler FLAVOR=$(FLAVOR)
 
+$(RESOURCE_NAME):
+	$(MAKE) -C resource FLAVOR=$(FLAVOR)
+
 clean_all: clean clean_dist
 	rm -rf DIST
 
 clean:
-	$(MAKE) -C handler clean
+	@for d in $(PRJ_DIRS) ; do \
+		$(MAKE) -C $$d clean || exit 1 ; \
+	done
 
 dist_dirs:
 	@mkdir -p $(DIST_NAME)/L
+	@mkdir -p $(DIST_NAME)/rom
 
 dist: dist_dirs
-	@$(MAKE) -C handler dist DIST_DIR=../$(DIST_NAME)
+	@for d in $(PRJ_DIRS) ; do \
+		$(MAKE) -C $$d dist DIST_DIR=../$(DIST_NAME) || exit 1 ; \
+	done
 	@cp README.md $(DIST_NAME)/
 	@echo "--- dist: $(DIST_NAME) ---"
 	@ls -laR $(DIST_NAME)
