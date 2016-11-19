@@ -1,6 +1,6 @@
 FLAVOR?=_dbg
 BUILD_DIR=BUILD
-HANDLER_NAME=src/BUILD/uCON-handler$(FLAVOR)
+HANDLER_NAME=handler/BUILD/ucon-handler$(FLAVOR)
 
 FLAVORS=_rel _dbg
 
@@ -24,19 +24,19 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 $(HANDLER_NAME):
-	$(MAKE) -C src FLAVOR=$(FLAVOR)
+	$(MAKE) -C handler FLAVOR=$(FLAVOR)
 
 clean_all: clean clean_dist
 	rm -rf DIST
 
 clean:
-	$(MAKE) -C src clean
+	$(MAKE) -C handler clean
 
 dist_dirs:
 	@mkdir -p $(DIST_NAME)/L
 
 dist: dist_dirs
-	@$(MAKE) -C src dist DIST_DIR=../$(DIST_NAME)
+	@$(MAKE) -C handler dist DIST_DIR=../$(DIST_NAME)
 	@cp README.md $(DIST_NAME)/
 	@echo "--- dist: $(DIST_NAME) ---"
 	@ls -laR $(DIST_NAME)

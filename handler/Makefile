@@ -1,6 +1,6 @@
-# Makefile to cross-compile romdisk.device
+# Makefile to cross-compile ucon-handler
 
-PRJ_NAME=uCON-handler
+PRJ_NAME=ucon-handler
 DIST_SUBDIR=l
 
 FLAVOR?=_dbg
